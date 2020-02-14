@@ -15,7 +15,7 @@ setup(
     package_data={
         'libspy': ['README.md', 'LICENSE']
     },
-    install_requires=['cryptography'],
+    install_requires=['shadowsocks-py'],
     entry_points="""
     [console_scripts]
     sslocal = shadowsocks.local:main
