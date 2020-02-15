@@ -7,6 +7,7 @@ import os
 import sys
 import time
 from multiprocessing import Process
+from threading import Thread
 
 from shadowsocks import asyncdns, tcprelay, udprelay, eventloop
 
@@ -35,6 +36,7 @@ class SSClient:
         self._is_started = False
         self.server_started = False
         self._server_process = Process(target=self._start_ss)
+        self._server_process_ppid = self._server_process.pid
 
     def _start_ss(self):
         logging.info("starting local at %s:%d" % (self.config['local_address'], self.config['local_port']))
@@ -49,14 +51,14 @@ class SSClient:
 
         loop.run()
 
-    def start(self):
+    def start_forever(self):
         self._is_started = True
         self.daemon()
 
     def daemon(self):
         while True:
             try:
-                time.sleep(1)
+                time.sleep(3)
 
                 if self._is_started and not self.server_started:
                     self.server_started = True
@@ -66,6 +68,7 @@ class SSClient:
                     self._server_process.terminate()
                     logging.info('user exit')
                     sys.exit()
+
             except KeyboardInterrupt:
                 self._is_stopped = True
 
@@ -75,4 +78,7 @@ class SSClient:
 
 if __name__ == '__main__':
     ssc = SSClient('127.0.0.1', 12345, '127.0.0.1', 1080, '123456', 'rc4-md5')
-    ssc.start()
+
+    Thread(target=ssc.start_forever).start()
+    time.sleep(5)
+    ssc.stop()

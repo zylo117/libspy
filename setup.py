@@ -6,7 +6,7 @@ with open('README.md') as f:
 
 setup(
     name="libspy",
-    version="0.0.1",
+    version="0.0.2",
     license='GNU General Public License version 3',
     description="A api and minimal server of ss",
     author='carl cheung',
